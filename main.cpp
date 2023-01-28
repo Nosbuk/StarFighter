@@ -19,7 +19,7 @@ public:
     {
         this->shape.setTexture(*texture);
 
-        this->shape.setScale(0.06f, 0.06f);
+        this->shape.setScale(0.09f, 0.09f);
         this->shape.setPosition(position);
     }
 
@@ -48,8 +48,8 @@ public:
 
         // dereference of pointer pointing to texture
         this->shape.setTexture(*texture);
-        this->shape.setScale(0.4f, 0.4f);
-        this->shape.setRotation(180.f);
+        this->shape.setScale(0.2f, 0.2f);
+        this->shape.setRotation(90.f);
         this->shape.setPosition(90.f, 150.f);
     }
 
@@ -71,10 +71,9 @@ public:
 
         // dereference of pointer pointing to texture
         this->shape.setTexture(*texture);
-        this->shape.setScale(0.1f, 0.1f);
-        this->shape.setRotation(270.f);
+        this->shape.setScale(0.3f, 0.3f);
 
-        this->shape.setPosition(windowSize.x - this->shape.getGlobalBounds().width, rand() % windowSize.y + this->shape.getGlobalBounds().height);
+        this->shape.setPosition(windowSize.x - this->shape.getGlobalBounds().width, rand() % windowSize.y + this->shape.getGlobalBounds().height - 10);
     }
 
     ~Enemy()
@@ -85,18 +84,19 @@ public:
 int main()
 {
     // Game settings
-    const float playerVelocity = 30;
-    const float playerBulletsVelocity = 30;
+    const float playerVelocity = 25;
+    const float playerBulletsVelocity = 25;
 
-    const int reloadTime = 10;
+    const int reloadTime = 15;
     int shootTimer = reloadTime - 1;
 
-    const float enemyVelocity = 8;
-    const int enemySpawnRate = 10;
+    const float enemyVelocity = 5;
+    const int enemySpawnRate = 30;
     int enemySpawnTimer = 0;
 
     int score = 0;
 
+    // time(NULL) returns unix date time format so each time there will be unique seed in each rand() ensuring best randomness
     srand(time(NULL));
 
     // Init fullscreen window
@@ -110,21 +110,21 @@ int main()
     // Init playerHpText
     Text playerHpText;
     playerHpText.setFont(font);
-    playerHpText.setCharacterSize(12);
-    playerHpText.setFillColor(Color::Green);
+    playerHpText.setCharacterSize(20);
+    playerHpText.setFillColor(Color::Red);
 
     // Init enemyHpText
     Text enemyHpText;
     enemyHpText.setFont(font);
-    enemyHpText.setCharacterSize(30);
-    enemyHpText.setFillColor(Color::Green);
+    enemyHpText.setCharacterSize(18);
+    enemyHpText.setFillColor(Color::Red);
 
     // Init scoreText
     Text scoreText;
     scoreText.setFont(font);
     scoreText.setCharacterSize(20);
     scoreText.setFillColor(Color::Yellow);
-    scoreText.setPosition(10.f, 10.f);
+    scoreText.setPosition(300.f, 10.f);
 
     // Init gameOverText
     Text gameOverText;
@@ -136,11 +136,11 @@ int main()
 
     // Init player texture
     Texture playerTexture;
-    playerTexture.loadFromFile("./assets/player.jpeg");
+    playerTexture.loadFromFile("./assets/player.png");
 
     // Init enemy texture
     Texture enemyTexture;
-    enemyTexture.loadFromFile("./assets/enemy.jpeg");
+    enemyTexture.loadFromFile("./assets/enemy.png");
 
     // Init bullet texture
     Texture bulletTexture;
@@ -173,12 +173,12 @@ int main()
         }
         if (player.HP > 0)
         {
-            playerHpText.setPosition(player.shape.getPosition().x, player.shape.getPosition().y - playerHpText.getGlobalBounds().height);
-            playerHpText.setString(std::to_string(player.HP) + "/" + std::to_string(player.HPMax));
+            playerHpText.setPosition(10.f, 10.f);
+            playerHpText.setString("Player HP: " + std::to_string(player.HP) + "/" + std::to_string(player.HPMax));
 
             // check player collision with window
-            if (player.shape.getPosition().y <= 0) // top
-                player.shape.setPosition(player.shape.getPosition().x, 0.f);
+            if (player.shape.getPosition().y <= 35) // top
+                player.shape.setPosition(player.shape.getPosition().x, 35.f);
             if (player.shape.getPosition().y >= window.getSize().y - player.shape.getGlobalBounds().height) // bottom
                 player.shape.setPosition(player.shape.getPosition().x, window.getSize().y - player.shape.getGlobalBounds().height);
 
@@ -189,7 +189,7 @@ int main()
             // shot bullet if reloaded
             if (Mouse::isButtonPressed(Mouse::Left) && shootTimer >= reloadTime)
             {
-                player.bullets.push_back(Bullet(&bulletTexture, player.shape.getPosition()));
+                player.bullets.push_back(Bullet(&bulletTexture, Vector2f(player.shape.getPosition().x, player.shape.getPosition().y + 40)));
                 shootTimer = 0;
             }
 
@@ -260,7 +260,7 @@ int main()
                 }
             }
 
-            scoreText.setString("Kills: " + std::to_string(score));
+            scoreText.setString("Enemies hit: " + std::to_string(score));
         }
         // Clear previous frame
         window.clear();
@@ -278,7 +278,7 @@ int main()
         for (size_t i = 0; i < enemies.size(); i++)
         {
             enemyHpText.setString(std::to_string(enemies[i].HP) + "/" + std::to_string(enemies[i].HPMax));
-            enemyHpText.setPosition(enemies[i].shape.getPosition().x, enemies[i].shape.getPosition().y + enemyHpText.getGlobalBounds().height);
+            enemyHpText.setPosition(enemies[i].shape.getPosition().x + 27, enemies[i].shape.getPosition().y - enemyHpText.getGlobalBounds().height - 8);
 
             // Draw enemy HP
             window.draw(enemyHpText);
