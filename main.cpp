@@ -90,7 +90,7 @@ int main()
     const int reloadTime = 15;
     int shootTimer = reloadTime - 1;
 
-    const float enemyVelocity = 5;
+    const float enemyVelocity = 6;
     const int enemySpawnRate = 30;
     int enemySpawnTimer = 0;
 
