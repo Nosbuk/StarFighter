@@ -7,20 +7,50 @@
 #include <math.h>
 #include <cstdlib>
 #include <vector>
+#include <random>
 
 using namespace sf;
 
-class Bullet
+class GameObject
 {
 public:
     Sprite shape;
+    Vector2f velocity;
 
+    void move()
+    {
+        this->shape.move(velocity);
+    }
+};
+
+class Alive : public GameObject
+{
+public:
+    int HP;
+    int HPMax;
+    void setHP(int hp)
+    {
+        HP = hp;
+    }
+    int getHP()
+    {
+        return HP;
+    }
+    void takeHit()
+    {
+        HP--;
+    }
+};
+
+class Bullet : public GameObject
+{
+public:
     Bullet(Texture *texture, Vector2f position)
     {
         this->shape.setTexture(*texture);
-
         this->shape.setScale(0.09f, 0.09f);
         this->shape.setPosition(position);
+        this->velocity = Vector2f(-25.f, 0.f);
     }
 
     // Bullet destructor
@@ -29,16 +59,13 @@ public:
     };
 };
 
-class Player
+class Player : public Alive
 {
-    // pointer to texture to save memory
-public:
-    Sprite shape;
-    Texture *texture;
-    int HP;
-    int HPMax;
-    std::vector<Bullet> bullets;
+private:
+    using Alive::HP;
 
+public:
+    std::vector<Bullet> bullets;
     // Player constructor
     Player(Texture *texture)
     {
@@ -55,14 +82,13 @@ public:
 
     ~Player() {}
 };
-class Enemy
+
+class Enemy : public Alive
 {
+private:
+    using Alive::HP;
+
 public:
-    Sprite shape;
-
-    int HP;
-    int HPMax;
-
     Enemy(Texture *texture, Vector2u windowSize)
     {
         // rand() returns from 0 to 99 so HPMax of each enemy varies from 1 to 3
@@ -72,8 +98,8 @@ public:
         // dereference of pointer pointing to texture
         this->shape.setTexture(*texture);
         this->shape.setScale(0.3f, 0.3f);
-
-        this->shape.setPosition(windowSize.x - this->shape.getGlobalBounds().width, rand() % windowSize.y + this->shape.getGlobalBounds().height - 10);
+        this->velocity = Vector2f(rand() % 30, 0.f);
+        this->shape.setPosition(windowSize.x - this->shape.getGlobalBounds().width, rand() % (windowSize.y - 150) + this->shape.getGlobalBounds().height);
     }
 
     ~Enemy()
@@ -112,6 +138,7 @@ int main()
     playerHpText.setFont(font);
     playerHpText.setCharacterSize(20);
     playerHpText.setFillColor(Color::Red);
+    playerHpText.setPosition(10.f, 10.f);
 
     // Init enemyHpText
     Text enemyHpText;
@@ -166,15 +193,14 @@ int main()
                 window.close();
 
             // player movement
-            if (event.KeyPressed && event.key.code == Keyboard::W && player.HP > 0)
+            if (event.KeyPressed && event.key.code == Keyboard::W && player.getHP() > 0)
                 player.shape.move(0.f, -playerVelocity);
-            if (event.KeyPressed && event.key.code == Keyboard::S && player.HP > 0)
+            if (event.KeyPressed && event.key.code == Keyboard::S && player.getHP() > 0)
                 player.shape.move(0.f, playerVelocity);
         }
-        if (player.HP > 0)
+        playerHpText.setString("Player HP: " + std::to_string(player.getHP()) + "/" + std::to_string(player.HPMax));
+        if (player.getHP() > 0)
         {
-            playerHpText.setPosition(10.f, 10.f);
-            playerHpText.setString("Player HP: " + std::to_string(player.HP) + "/" + std::to_string(player.HPMax));
 
             // check player collision with window
             if (player.shape.getPosition().y <= 35) // top
@@ -222,7 +248,7 @@ int main()
                     enemies.erase(enemies.begin() + i);
 
                     // player takes damage from hit
-                    player.HP--;
+                    player.takeHit();
                 }
             }
 
@@ -244,7 +270,7 @@ int main()
                     {
                         player.bullets.erase(player.bullets.begin() + i);
 
-                        if (enemies[j].HP <= 1)
+                        if (enemies[j].getHP() <= 1)
                         {
                             // enemy dies
                             score += enemies[j].HPMax;
@@ -253,8 +279,7 @@ int main()
                         else
                         {
                             // enemy takes damage
-                            enemies[j]
-                                .HP--;
+                            enemies[j].takeHit();
                         }
                     }
                 }
@@ -277,7 +302,7 @@ int main()
         // Draw enemies
         for (size_t i = 0; i < enemies.size(); i++)
         {
-            enemyHpText.setString(std::to_string(enemies[i].HP) + "/" + std::to_string(enemies[i].HPMax));
+            enemyHpText.setString(std::to_string(enemies[i].getHP()) + "/" + std::to_string(enemies[i].HPMax));
             enemyHpText.setPosition(enemies[i].shape.getPosition().x + 27, enemies[i].shape.getPosition().y - enemyHpText.getGlobalBounds().height - 8);
 
             // Draw enemy HP
@@ -294,7 +319,7 @@ int main()
         window.draw(scoreText);
 
         // Draw gameover
-        if (player.HP <= 0)
+        if (player.getHP() <= 0)
             window.draw(gameOverText);
 
         // Render new frame
