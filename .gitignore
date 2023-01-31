@@ -1,4 +1,11 @@
 /tutorials
+# Executables
+*.exe
+*.out
+*.app
+
+### macOS ###
+# General
 .DS_Store
-.vscode
-StarFighter
+.AppleDouble
+.LSOverride
