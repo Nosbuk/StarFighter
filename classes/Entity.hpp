@@ -24,4 +24,12 @@ public:
     {
         this->shape.move(velocity, 0.f);
     }
+    Vector2f getPosition()
+    {
+        return this->shape.getPosition();
+    }
+    FloatRect getGlobalBounds()
+    {
+        return this->shape.getGlobalBounds();
+    }
 };

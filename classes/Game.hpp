@@ -19,8 +19,6 @@ class Game
 {
 
 private:
-    float playerBulletsVelocity;
-
     int reloadTime;
     int shootTimer;
 
@@ -124,17 +122,17 @@ public:
 
             if (player.getHP() > 0)
             {
-                if (player.shape.getPosition().y <= 35) // top
-                    player.shape.setPosition(player.shape.getPosition().x, 35.f);
-                if (player.shape.getPosition().y >= window.getSize().y - player.shape.getGlobalBounds().height)
-                    player.shape.setPosition(player.shape.getPosition().x, window.getSize().y - player.shape.getGlobalBounds().height);
+                if (player.getPosition().y <= 35) // top
+                    player.shape.setPosition(player.getPosition().x, 35.f);
+                if (player.getPosition().y >= window.getSize().y - player.getGlobalBounds().height)
+                    player.shape.setPosition(player.getPosition().x, window.getSize().y - player.getGlobalBounds().height);
 
                 if (shootTimer < reloadTime)
                     shootTimer++;
 
                 if (Mouse::isButtonPressed(Mouse::Left) && shootTimer >= reloadTime)
                 {
-                    player.bullets.push_back(Bullet(&bulletTexture, Vector2f(player.shape.getPosition().x, player.shape.getPosition().y + 40.f)));
+                    player.bullets.push_back(Bullet(&bulletTexture, Vector2f(player.getPosition().x, player.getPosition().y + 40.f)));
                     shootTimer = 0;
                 }
 
@@ -151,12 +149,12 @@ public:
                 {
                     enemies[i].moveLeft();
 
-                    if (enemies[i].shape.getPosition().x <= 0 - enemies[i].shape.getGlobalBounds().width)
+                    if (enemies[i].getPosition().x <= 0 - enemies[i].getGlobalBounds().width)
                     {
                         enemies.erase(enemies.begin() + i);
                     }
 
-                    if (enemies[i].shape.getGlobalBounds().intersects(player.shape.getGlobalBounds()))
+                    if (enemies[i].getGlobalBounds().intersects(player.getGlobalBounds()))
                     {
                         enemies.erase(enemies.begin() + i);
 
@@ -168,14 +166,14 @@ public:
                 {
                     player.bullets[i].moveRight();
 
-                    if (player.bullets[i].shape.getPosition().x > window.getSize().x)
+                    if (player.bullets[i].getPosition().x > window.getSize().x)
                     {
                         player.bullets.erase(player.bullets.begin() + i);
                     }
 
                     for (size_t j = 0; j < enemies.size(); j++)
                     {
-                        if (player.bullets[i].shape.getGlobalBounds().intersects(enemies[j].shape.getGlobalBounds()))
+                        if (player.bullets[i].getGlobalBounds().intersects(enemies[j].getGlobalBounds()))
                         {
                             player.bullets.erase(player.bullets.begin() + i);
 
@@ -207,7 +205,7 @@ public:
             for (size_t i = 0; i < enemies.size(); i++)
             {
                 enemyHpText.setString(std::to_string(enemies[i].getHP()) + "/" + std::to_string(enemies[i].HPMax));
-                enemyHpText.setPosition(enemies[i].shape.getPosition().x + 27, enemies[i].shape.getPosition().y - enemyHpText.getGlobalBounds().height - 8);
+                enemyHpText.setPosition(enemies[i].getPosition().x + 27, enemies[i].getPosition().y - enemyHpText.getGlobalBounds().height - 8);
 
                 window.draw(enemyHpText);
 
