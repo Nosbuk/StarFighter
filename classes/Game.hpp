@@ -56,13 +56,11 @@ private:
 public:
     Game() : window(VideoMode::getFullscreenModes()[0], "StarFighter", Style::Fullscreen)
     {
-        this->playerBulletsVelocity = 25;
-
         this->reloadTime = 15;
         this->shootTimer = this->reloadTime - 1;
 
         this->enemySpawnRate = 30;
-        this->enemySpawnTimer = 3;
+        this->enemySpawnTimer = 0;
 
         this->score = 0;
 
