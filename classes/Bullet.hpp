@@ -15,7 +15,6 @@ public:
         this->velocity = 25.f;
     }
 
-    // Bullet destructor
     ~Bullet(){
 
     };

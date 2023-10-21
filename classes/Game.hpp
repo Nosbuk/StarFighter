@@ -122,7 +122,7 @@ public:
 
             if (player.getHP() > 0)
             {
-                if (player.getPosition().y <= 35) // top
+                if (player.getPosition().y <= 35)
                     player.shape.setPosition(player.getPosition().x, 35.f);
                 if (player.getPosition().y >= window.getSize().y - player.getGlobalBounds().height)
                     player.shape.setPosition(player.getPosition().x, window.getSize().y - player.getGlobalBounds().height);
@@ -184,7 +184,6 @@ public:
                             }
                             else
                             {
-                                // enemy takes damage
                                 enemies[j].takeHit();
                             }
                         }
@@ -219,7 +218,6 @@ public:
             if (player.getHP() <= 0)
                 window.draw(gameOverText);
 
-            // Render new frame
             window.display();
         }
         return 0;

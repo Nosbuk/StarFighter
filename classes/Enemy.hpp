@@ -12,11 +12,9 @@ private:
 public:
     Enemy(Texture *texture, Vector2u windowSize)
     {
-        // rand() returns from 0 to 99 so HPMax of each enemy varies from 1 to 3
         this->HPMax = rand() % 3 + 1;
         this->HP = this->HPMax;
 
-        // dereference of pointer pointing to texture
         this->shape.setTexture(*texture);
         this->shape.setScale(0.3f, 0.3f);
         this->velocity = 2.f;
